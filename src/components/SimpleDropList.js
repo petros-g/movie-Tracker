@@ -15,7 +15,7 @@ const SimpleDropList = ({data}) => {
               style={styles.image}
               resizeMode={FastImage.resizeMode.contain}
               source={{
-                uri: `https://image.tmdb.org/t/p/w200${item.poster_path}`,
+                uri: `https://image.tmdb.org/t/p/w200${item.poster}`,
               }}
             />
           </View>
