@@ -1,30 +1,29 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 
 import {StyleSheet, View} from "react-native";
-import {fetchPopularSeries, fetchSeriesGenres} from "../api/apiFunctions";
+import {useDispatch, useSelector} from "react-redux";
 import CarouselList from "../components/CarouselList";
 import SearchBarItem from "../components/SearchBarItem";
 import SimpleDropList from "../components/SimpleDropList";
-import {useData} from "../Context";
+import {getPopularSeries, getSeriesGenres} from "../redux/slices/seriesSlice";
 
 export default function HomeScreen({route}) {
-  const {popularSeries, setSeriesGenres, setPopularSeries, seriesGenres} =
-    useData();
+  const dispatch = useDispatch();
   const [changeLayout, setChangeLayout] = useState(false);
 
-  const flatlistRef = useRef();
+  const {seriesPopular} = useSelector(state => state.seriesSlice);
+
   useEffect(() => {
-    fetchPopularSeries().then(res => setPopularSeries(res));
-    fetchSeriesGenres().then(res => setSeriesGenres(res.genres));
+    dispatch(getPopularSeries());
   }, []);
 
   return (
     <View style={styles.container}>
       <SearchBarItem setChangeLayout={setChangeLayout} />
       {changeLayout ? (
-        <CarouselList popularMovies={popularSeries} genres={seriesGenres} />
+        <CarouselList popularMovies={seriesPopular} />
       ) : (
-        <SimpleDropList data={popularSeries} />
+        <SimpleDropList data={seriesPopular} />
       )}
     </View>
   );

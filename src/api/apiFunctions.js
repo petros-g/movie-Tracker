@@ -1,13 +1,14 @@
 import axios from "axios";
 
-const API_KEY = "3e6dced6d51fbfd4714907f655567a4f";
-const popularMoviesLink = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=1`;
+export const API_KEY = "3e6dced6d51fbfd4714907f655567a4f";
+export const popularMoviesLink = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=1`;
 const popularTVLink = `https://api.themoviedb.org/3/tv/top_rated?api_key=${API_KEY}&language=en-US&page=1`;
 const movieGenres = `https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}&language=en-US`;
 const seriesGenres = `https://api.themoviedb.org/3/genre/tv/list?api_key=${API_KEY}&language=en-US`;
 
-export const fetchPopularMovies = async () => {
-  const {data} = await axios.get(popularMoviesLink);
+export const fetchPopular = async type => {
+  const linkToFetch = type ? popularMoviesLink : popularTVLink;
+  const {data} = await axios.get(linkToFetch);
 
   const finalData = data?.results.map(
     ({
@@ -18,54 +19,48 @@ export const fetchPopularMovies = async () => {
       backdrop_path,
       overview,
       genre_ids,
-    }) => ({
-      poster: poster_path,
-      rating: vote_average,
-      backdrop: backdrop_path,
-      title: original_title,
-      description: overview,
-      genres: genre_ids,
-      release: release_date,
-    }),
-  );
-
-  return finalData;
-};
-
-export const fetchPopularSeries = async () => {
-  const {data} = await axios.get(popularTVLink);
-
-  const finalData = data?.results.map(
-    ({
-      first_air_date,
+      id,
       original_name,
-      poster_path,
-      vote_average,
-      backdrop_path,
-      overview,
-      genre_ids,
+      first_air_date,
     }) => ({
       poster: poster_path,
       rating: vote_average,
       backdrop: backdrop_path,
-      title: original_name,
+      title: type ? original_title : original_name,
       description: overview,
       genres: genre_ids,
-      release: first_air_date,
+      release: type ? release_date : first_air_date,
+      id,
     }),
   );
 
   return finalData;
 };
 
-export const fetchMovieGenres = async () => {
-  const {data} = await axios.get(movieGenres);
+export const fetchGenres = async () => {
+  const moviesGenresData = await axios.get(movieGenres);
+  const seriesGenresData = await axios.get(seriesGenres);
+
+  const data = [
+    ...moviesGenresData?.data.genres,
+    ...seriesGenresData?.data.genres,
+  ];
 
   return data;
 };
 
-export const fetchSeriesGenres = async () => {
-  const {data} = await axios.get(seriesGenres);
+export const fetchDetails = async ({id, type}) => {
+  const movieDetails = `https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=en-US`;
+  const seriesDetails = `https://api.themoviedb.org/3/tv/${id}?api_key=${API_KEY}&language=en-US`;
 
-  return data;
+  if (type === "movie") {
+    const {data} = await axios.get(movieDetails);
+
+    return data;
+  } else {
+    const {data} = await axios.get(seriesDetails);
+    data["release_date"] = data["first_air_date"];
+    data["title"] = data["name"];
+    return data;
+  }
 };

@@ -1,20 +1,15 @@
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  useWindowDimensions,
-  View,
-} from "react-native";
-import React, {useMemo, useRef, useState} from "react";
-import {Animated} from "react-native";
-import FastImage from "react-native-fast-image";
-import {AnimatedCircularProgress} from "react-native-circular-progress";
+import {useNavigation} from "@react-navigation/native";
+import React, {useEffect, useMemo, useRef} from "react";
+import {Animated, StyleSheet, useWindowDimensions, View} from "react-native";
+import {useSelector} from "react-redux";
 import CarouselListItem from "./CarouselListItem";
 
-const CarouselList = ({popularMovies, genres}) => {
+const CarouselList = ({popularMovies}) => {
+  const {genres} = useSelector(state => state.moviesSlice);
   const {width} = useWindowDimensions();
   const scrollX = useRef(new Animated.Value(0)).current;
+  const navigation = useNavigation();
+  const tabIndex = navigation.getState().index;
 
   return (
     <>
@@ -52,10 +47,11 @@ const CarouselList = ({popularMovies, genres}) => {
         renderItem={({item, index}) => {
           return (
             <CarouselListItem
+              genres={genres}
+              tabIndex={tabIndex}
               item={item}
               index={index}
               scrollX={scrollX}
-              genres={genres}
             />
           );
         }}

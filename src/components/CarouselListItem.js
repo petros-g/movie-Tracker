@@ -1,17 +1,26 @@
+import {Button, Chip, Icon, Text} from "@rneui/themed";
+import React, {useMemo, useRef, useState} from "react";
 import {
   Animated,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
   useWindowDimensions,
   View,
 } from "react-native";
-import React, {useMemo, useRef, useState} from "react";
-import {useData} from "../Context";
-import FastImage from "react-native-fast-image";
 import {AnimatedCircularProgress} from "react-native-circular-progress";
+import FastImage from "react-native-fast-image";
+import DetailModal from "./DetailModal";
+import VideoModal from "./VideoModal";
 
-export default function CarouselListItem({item, index, scrollX, genres}) {
+export default function CarouselListItem({
+  item,
+  index,
+  scrollX,
+  genres,
+  tabIndex,
+}) {
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+
   const {width} = useWindowDimensions();
   const IMAGE_WIDTH = useMemo(() => width * 0.7, [width]);
   const IMAGE_HEIGHT = useMemo(() => IMAGE_WIDTH * 1.54, [IMAGE_WIDTH]);
@@ -19,13 +28,14 @@ export default function CarouselListItem({item, index, scrollX, genres}) {
   const rotateY = useRef(new Animated.Value(0)).current;
 
   const [toggled, setToggled] = useState(false);
+  const [isVideoModalVisible, setIsVideoModalVisible] = useState(false);
 
   const toggleAnimation = () => {
     setToggled(prev => !prev);
 
     Animated.timing(rotateY, {
       toValue: toggled ? 100 : 0,
-      duration: 600,
+      duration: 500,
       useNativeDriver: true,
     }).start();
   };
@@ -48,13 +58,22 @@ export default function CarouselListItem({item, index, scrollX, genres}) {
   const genresFinal = item?.genres?.map(id => {
     return genres?.find(genre => genre.id === id);
   });
+
+  const {
+    container,
+    circular,
+    circularText,
+    flippedSideContainer,
+    flippedSideImage,
+  } = styles;
   return (
     <View
-      style={{
-        width,
-        alignItems: "center",
-        justifyContent: "center",
-      }}>
+      style={[
+        container,
+        {
+          width,
+        },
+      ]}>
       <TouchableWithoutFeedback style={{zIndex: 11}} onPress={toggleAnimation}>
         <Animated.View
           style={{
@@ -62,64 +81,52 @@ export default function CarouselListItem({item, index, scrollX, genres}) {
             width: IMAGE_WIDTH,
             transform: [{rotateY: rotateImage}],
           }}>
-          <AnimatedCircularProgress
-            style={{
-              zIndex: 1,
+          <View style={{position: "absolute", zIndex: 10}}>
+            <Icon
+              onPress={() => setIsVideoModalVisible(true)}
+              size={20}
+              reverse
+              name="play"
+              type="ionicon"
+              color="#517fa4"
+            />
+          </View>
 
-              position: "absolute",
-              right: 10,
-              top: 10,
-            }}
+          <AnimatedCircularProgress
+            style={circular}
             size={50}
             width={5}
             fill={Number(item?.rating) * 10}
             tintColor="purple"
             tintColorSecondary="green">
-            {() => (
-              <Text
-                style={{
-                  color: "black",
-                  backgroundColor: "#ffffff50",
-                  padding: 10,
-                }}>
-                {item?.rating.toFixed(1)}
-              </Text>
-            )}
+            {() => <Text style={circularText}>{item?.rating.toFixed(1)}</Text>}
           </AnimatedCircularProgress>
-          <Animated.Image
+
+          <FastImage
             style={{
               height: IMAGE_HEIGHT,
               width: IMAGE_WIDTH,
-              resizeMode: "cover",
-              position: "absolute",
               borderRadius: 16,
             }}
+            resizeMode="cover"
             source={{
-              uri: `https://image.tmdb.org/t/p/original${item.poster}`,
+              uri: `https://image.tmdb.org/t/p/w500${item.poster}`,
             }}
           />
         </Animated.View>
       </TouchableWithoutFeedback>
       <TouchableWithoutFeedback onPress={toggleAnimation}>
         <Animated.View
-          style={{
-            height: IMAGE_HEIGHT,
-            width: IMAGE_WIDTH,
-            position: "absolute",
-            borderRadius: 16,
-            alignItems: "center",
-            backgroundColor: "white",
-            transform: [{rotateY: rotateDetails}],
-            overflow: "hidden",
-          }}>
+          style={[
+            flippedSideContainer,
+            {
+              height: IMAGE_HEIGHT,
+              width: IMAGE_WIDTH,
+              transform: [{rotateY: rotateDetails}],
+            },
+          ]}>
           <FastImage
-            style={{
-              width: "100%",
-              height: 150,
-              borderTopLeftRadius: 16,
-              borderTopRightRadius: 16,
-              overflow: "visible",
-            }}
+            style={flippedSideImage}
             source={{
               uri: `https://image.tmdb.org/t/p/w500${item.backdrop}`,
             }}>
@@ -127,40 +134,103 @@ export default function CarouselListItem({item, index, scrollX, genres}) {
               <Text style={{color: "black"}}>{item.title}</Text>
             </View>
           </FastImage>
-
-          <View style={{marginTop: 30}} />
-          <View style={{}}>
-            <Text
-              style={{
-                paddingHorizontal: 10,
-                textAlign: "center",
-                fontSize: 13,
-              }}>
-              {item.description}
-            </Text>
+          <View style={{marginTop: 25}} />
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}>
+            <Chip
+              title={item?.release.slice(0, 4)}
+              size="sm"
+              icon={{
+                name: "calendar",
+                type: "font-awesome",
+                size: 15,
+                color: "white",
+              }}
+              raised
+              color={"#292b30"}
+              buttonStyle={{elevation: 8}}
+              containerStyle={{
+                marginLeft: 10,
+                alignSelf: "flex-start",
+              }}
+            />
+            <Text style={{right: 10, fontSize: 20}}>{item.rating}⭐</Text>
           </View>
+          <View style={{marginTop: 10}} />
+          <Text numberOfLines={5} style={styles.description}>
+            {item.description}
+          </Text>
+          <View style={{marginTop: 10}} />
+
           <View style={styles.genreView}>
             {genresFinal.map(genre => (
-              <Text
-                style={{
-                  margin: 2,
-
-                  padding: 5,
-                  borderWidth: 1,
-                  borderRadius: 25,
+              <Chip
+                key={genre?.id}
+                titleStyle={{color: "gray"}}
+                type="outline"
+                raised
+                size="sm"
+                radius={5}
+                buttonStyle={{
+                  borderColor: "transparent",
+                  backgroundColor: "white",
+                  elevation: 0,
                 }}
-                key={genre.id}>
-                {genre.name}
-              </Text>
+                containerStyle={{
+                  margin: 3,
+                }}>
+                {genre?.name}
+              </Chip>
             ))}
           </View>
+
+          <Button
+            onPress={() => setIsDetailModalVisible(true)}
+            icon={{
+              name: "arrow-up",
+              type: "font-awesome",
+              size: 25,
+              color: "white",
+            }}
+            loading={false}
+            buttonStyle={{
+              backgroundColor: "#00000080",
+            }}
+            containerStyle={{
+              justifyContent: "flex-end",
+              flex: 1,
+            }}
+          />
         </Animated.View>
       </TouchableWithoutFeedback>
+      <DetailModal
+        data={item}
+        isVisible={isDetailModalVisible}
+        onBackdropPress={() => setIsDetailModalVisible(false)}
+      />
+      <VideoModal
+        tabIndex={tabIndex}
+        id={item?.id}
+        onBackdropPress={() => setIsVideoModalVisible(false)}
+        isVisible={isVideoModalVisible}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  description: {
+    paddingHorizontal: 15,
+    textAlign: "justify",
+    fontSize: 12,
+  },
   title: {
     backgroundColor: "white",
     borderRadius: 10,
@@ -176,5 +246,34 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
+  },
+  genreText: {
+    margin: 2,
+
+    padding: 5,
+
+    borderRadius: 25,
+    elevation: 10,
+  },
+  circular: {
+    zIndex: 1,
+
+    position: "absolute",
+    right: 10,
+    top: 10,
+  },
+  circularText: {color: "black", backgroundColor: "#ffffff50", padding: 10},
+  flippedSideContainer: {
+    position: "absolute",
+    borderRadius: 16,
+    backgroundColor: "white",
+    overflow: "hidden",
+  },
+  flippedSideImage: {
+    width: "100%",
+    height: 150,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    overflow: "visible",
   },
 });

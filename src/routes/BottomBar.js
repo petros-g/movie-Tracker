@@ -2,7 +2,7 @@ import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {Icon} from "@rneui/themed";
 import React from "react";
 import {StyleSheet} from "react-native";
-import HomeScreen from "../screens/HomeScreen";
+import HomeScreen from "../screens/MovieScreen";
 import SeriesScreen from "../screens/SeriesScreen";
 
 const BottomBar = () => {
