@@ -2,12 +2,33 @@ import axios from "axios";
 
 export const API_KEY = "3e6dced6d51fbfd4714907f655567a4f";
 export const popularMoviesLink = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=en-US&page=1`;
-const popularTVLink = `https://api.themoviedb.org/3/tv/top_rated?api_key=${API_KEY}&language=en-US&page=1`;
+export const upcomingMoviesLink = `https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}&language=en-US&page=1`;
+export const topMoviesLink = `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1`;
+const popularTVLink = `https://api.themoviedb.org/3/tv/popular?api_key=${API_KEY}&language=en-US&page=1`;
+const upcomingTVLink = `https://api.themoviedb.org/3/tv/on_the_air?api_key=${API_KEY}&language=en-US&page=1`;
+const topTVLink = `https://api.themoviedb.org/3/tv/top_rated?api_key=${API_KEY}&language=en-US&page=1`;
 const movieGenres = `https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}&language=en-US`;
 const seriesGenres = `https://api.themoviedb.org/3/genre/tv/list?api_key=${API_KEY}&language=en-US`;
 
-export const fetchPopular = async type => {
-  const linkToFetch = type ? popularMoviesLink : popularTVLink;
+export const fetchPopular = async (type, category) => {
+  let categoryMoviesLink =
+    category === 0
+      ? popularMoviesLink
+      : category === 1
+      ? upcomingMoviesLink
+      : topMoviesLink;
+  let categorySeriesLink =
+    category === 0
+      ? popularTVLink
+      : category === 1
+      ? upcomingTVLink
+      : topTVLink;
+
+  if (!category) {
+    categoryMoviesLink = popularMoviesLink;
+    categorySeriesLink = popularTVLink;
+  }
+  const linkToFetch = type ? categoryMoviesLink : categorySeriesLink;
   const {data} = await axios.get(linkToFetch);
 
   const finalData = data?.results.map(

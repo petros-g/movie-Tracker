@@ -5,25 +5,38 @@ import {useDispatch, useSelector} from "react-redux";
 import CarouselList from "../components/CarouselList";
 import SearchBarItem from "../components/SearchBarItem";
 import SimpleDropList from "../components/SimpleDropList";
-import {getPopularSeries, getSeriesGenres} from "../redux/slices/seriesSlice";
+import {
+  getPopularSeries,
+  getSeriesGenres,
+  getTopRatedSeries,
+  getUpcomingSeries,
+} from "../redux/slices/seriesSlice";
 
 export default function HomeScreen({route}) {
   const dispatch = useDispatch();
   const [changeLayout, setChangeLayout] = useState(false);
 
-  const {seriesPopular} = useSelector(state => state.seriesSlice);
+  const {seriesCurrent} = useSelector(state => state.seriesSlice);
 
   useEffect(() => {
     dispatch(getPopularSeries());
   }, []);
 
+  const onChangeCategory = category => {
+    category === 0 && dispatch(getPopularSeries(category));
+    category === 1 && dispatch(getUpcomingSeries(category));
+    category === 2 && dispatch(getTopRatedSeries(category));
+  };
   return (
     <View style={styles.container}>
-      <SearchBarItem setChangeLayout={setChangeLayout} />
+      <SearchBarItem
+        setChangeLayout={setChangeLayout}
+        onChangeCategory={onChangeCategory}
+      />
       {changeLayout ? (
-        <CarouselList popularMovies={seriesPopular} />
+        <CarouselList popularMovies={seriesCurrent} />
       ) : (
-        <SimpleDropList data={seriesPopular} />
+        <SimpleDropList data={seriesCurrent} />
       )}
     </View>
   );

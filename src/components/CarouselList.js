@@ -25,7 +25,7 @@ const CarouselList = ({popularMovies}) => {
           });
           return (
             <Animated.Image
-              key={`image-${index}`}
+              key={`image-${item?.id}`}
               blurRadius={3}
               source={{
                 uri: `https://image.tmdb.org/t/p/w300${item.poster}`,
@@ -55,7 +55,7 @@ const CarouselList = ({popularMovies}) => {
             />
           );
         }}
-        keyExtractor={item => item.id}
+        keyExtractor={(item, index) => item?.id.toString()}
         data={popularMovies}
       />
     </>

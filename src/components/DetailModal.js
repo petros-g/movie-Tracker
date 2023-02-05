@@ -5,7 +5,7 @@ import FastImage from "react-native-fast-image";
 import ReactNativeModal from "react-native-modal";
 import {useSelector} from "react-redux";
 
-function DetailModal({isVisible, onBackdropPress, data}) {
+function DetailModal({isVisible, onBackdropPress, data, id}) {
   const {genres} = useSelector(state => state.moviesSlice);
 
   const genresFinal = data?.genres?.map(id => {

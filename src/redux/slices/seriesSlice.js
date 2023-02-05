@@ -2,13 +2,46 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {fetchPopular} from "../../api/apiFunctions";
 
 const initialState = {
-  seriesPopular: {},
+  seriesCurrent: null,
+  seriesPopular: null,
+  seriesUpcoming: null,
+  seriesTopRated: null,
 };
 
 export const getPopularSeries = createAsyncThunk(
   "series/getPopularSeries",
-  () => {
-    return fetchPopular();
+  (category, {getState}) => {
+    const {seriesSlice} = getState();
+    if (seriesSlice.seriesPopular) {
+      return seriesSlice.seriesPopular;
+    }
+    console.log("runs 1");
+    return fetchPopular(false, category);
+  },
+);
+
+export const getUpcomingSeries = createAsyncThunk(
+  "series/getUpcomingMovies",
+  (category, {getState}) => {
+    const {seriesSlice} = getState();
+    if (seriesSlice.seriesUpcoming) {
+      return seriesSlice.seriesUpcoming;
+    }
+    console.log("runs 1");
+    return fetchPopular(false, category);
+  },
+);
+
+export const getTopRatedSeries = createAsyncThunk(
+  "series/getTopRatedMovies",
+  (category, {getState}) => {
+    const {seriesSlice} = getState();
+
+    if (seriesSlice.seriesTopRated) {
+      return seriesSlice.seriesTopRated;
+    }
+    console.log("runs 2");
+    return fetchPopular(false, category);
   },
 );
 
@@ -23,6 +56,15 @@ export const seriesSlice = createSlice({
   extraReducers: builder => {
     builder.addCase(getPopularSeries.fulfilled, (state, action) => {
       state.seriesPopular = action.payload;
+      state.seriesCurrent = action.payload;
+    });
+    builder.addCase(getUpcomingSeries.fulfilled, (state, action) => {
+      state.seriesUpcoming = action.payload;
+      state.seriesCurrent = action.payload;
+    });
+    builder.addCase(getTopRatedSeries.fulfilled, (state, action) => {
+      state.seriesTopRated = action.payload;
+      state.seriesCurrent = action.payload;
     });
   },
 });

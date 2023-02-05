@@ -8,12 +8,12 @@ const initialState = {
 
 export const getDetailsData = createAsyncThunk(
   "getDetailsData",
-  (id, {getState}) => {
+  (object, {getState}) => {
     const {detailsSlice} = getState();
-    if (id.id === detailsSlice?.detailsData?.id) {
+    if (object.id === detailsSlice?.detailsData?.id) {
       return detailsSlice?.detailsData;
     }
-    return fetchDetails(id);
+    return fetchDetails(object);
   },
 );
 
