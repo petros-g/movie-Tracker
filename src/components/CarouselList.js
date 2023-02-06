@@ -1,16 +1,34 @@
 import {useNavigation} from "@react-navigation/native";
 import React, {useEffect, useMemo, useRef} from "react";
 import {Animated, StyleSheet, useWindowDimensions, View} from "react-native";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {
+  getDetailsData,
+  setDetailModalVisible,
+} from "../redux/slices/detailsSlice";
+import {getVideoData, setIsVideoModalVisible} from "../redux/slices/videoSlice";
 import CarouselListItem from "./CarouselListItem";
 
 const CarouselList = ({popularMovies}) => {
+  const dispatch = useDispatch();
   const {genres} = useSelector(state => state.moviesSlice);
   const {width} = useWindowDimensions();
   const scrollX = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
-  const tabIndex = navigation.getState().index;
 
+  const onOpenDetailModal = id => {
+    const tabIndex = navigation.getState().index;
+    const type = tabIndex === 0 ? "movie" : "tv";
+    dispatch(setDetailModalVisible(true));
+    dispatch(getDetailsData({id: id, type}));
+  };
+
+  const onOpenVideoModal = id => {
+    const tabIndex = navigation.getState().index;
+    const type = tabIndex === 0 ? "movie" : "tv";
+    dispatch(setIsVideoModalVisible(true));
+    dispatch(getVideoData({id, type}));
+  };
   return (
     <>
       <View style={StyleSheet.absoluteFillObject}>
@@ -48,10 +66,11 @@ const CarouselList = ({popularMovies}) => {
           return (
             <CarouselListItem
               genres={genres}
-              tabIndex={tabIndex}
               item={item}
               index={index}
               scrollX={scrollX}
+              onOpenDetailModal={onOpenDetailModal}
+              onOpenVideoModal={onOpenVideoModal}
             />
           );
         }}

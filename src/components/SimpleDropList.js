@@ -1,11 +1,12 @@
-import React, {useCallback, useState} from "react";
+import React, {useState} from "react";
 import {StyleSheet, TouchableOpacity, View} from "react-native";
 import FastImage from "react-native-fast-image";
 import {FlatList} from "react-native-gesture-handler";
-import {useDispatch, useSelector} from "react-redux";
-import {fetchDetails} from "../api/apiFunctions";
-import {getDetailsData, setModalVisible} from "../redux/slices/detailsSlice";
-import DetailModal from "./DetailModal";
+import {useDispatch} from "react-redux";
+import {
+  getDetailsData,
+  setDetailModalVisible,
+} from "../redux/slices/detailsSlice";
 
 const SimpleDropList = ({data, type}) => {
   const dispatch = useDispatch();
@@ -13,7 +14,6 @@ const SimpleDropList = ({data, type}) => {
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [datas, setData] = useState(false);
-  const state = useSelector(res => res.detailsSlice);
 
   // const goToDetail = useCallback(
   //   id => {
@@ -26,8 +26,8 @@ const SimpleDropList = ({data, type}) => {
   //   [type],
   // );
 
-  const onPress = id => {
-    setIsDetailModalVisible(true);
+  const onOpenModal = id => {
+    dispatch(setDetailModalVisible(true));
     dispatch(getDetailsData({id: id, type}));
   };
 
@@ -38,7 +38,7 @@ const SimpleDropList = ({data, type}) => {
         numColumns={3}
         renderItem={({item}) => (
           <View style={{flex: 1, height: 180}}>
-            <TouchableOpacity onPress={() => onPress(item?.id)}>
+            <TouchableOpacity onPress={() => onOpenModal(item?.id)}>
               <FastImage
                 style={styles.image}
                 resizeMode={FastImage.resizeMode.contain}
@@ -49,11 +49,6 @@ const SimpleDropList = ({data, type}) => {
             </TouchableOpacity>
           </View>
         )}
-      />
-      <DetailModal
-        data={state?.detailsData}
-        isVisible={isDetailModalVisible}
-        onBackdropPress={() => setIsDetailModalVisible(false)}
       />
     </View>
   );

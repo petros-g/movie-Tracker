@@ -3,7 +3,7 @@ import {fetchDetails, fetchGenres} from "../../api/apiFunctions";
 
 const initialState = {
   detailsData: {},
-  isModalVisible: false,
+  isDetailModalVisible: false,
 };
 
 export const getDetailsData = createAsyncThunk(
@@ -24,18 +24,17 @@ export const detailsSlice = createSlice({
     setDetailsData: (state, action) => {
       return {...state, detailsData: action.payload};
     },
-    setModalVisible: (state, action) => {
-      return {...state, isModalVisible: action.payload};
+    setDetailModalVisible: (state, action) => {
+      return {...state, isDetailModalVisible: action.payload};
     },
   },
   extraReducers: builder => {
     builder.addCase(getDetailsData.fulfilled, (state, action) => {
       state.detailsData = action.payload;
-      state.isModalVisible = true;
     });
   },
 });
 
-export const {setDetailsData, setModalVisible} = detailsSlice.actions;
+export const {setDetailsData, setDetailModalVisible} = detailsSlice.actions;
 
 export default detailsSlice.reducer;

@@ -15,7 +15,7 @@ export const getPopularSeries = createAsyncThunk(
     if (seriesSlice.seriesPopular) {
       return seriesSlice.seriesPopular;
     }
-    console.log("runs 1");
+
     return fetchPopular(false, category);
   },
 );
@@ -27,7 +27,7 @@ export const getUpcomingSeries = createAsyncThunk(
     if (seriesSlice.seriesUpcoming) {
       return seriesSlice.seriesUpcoming;
     }
-    console.log("runs 1");
+
     return fetchPopular(false, category);
   },
 );
@@ -40,7 +40,7 @@ export const getTopRatedSeries = createAsyncThunk(
     if (seriesSlice.seriesTopRated) {
       return seriesSlice.seriesTopRated;
     }
-    console.log("runs 2");
+
     return fetchPopular(false, category);
   },
 );

@@ -17,7 +17,7 @@ export const getPopularMovies = createAsyncThunk(
     if (moviesSlice?.moviesPopular) {
       return moviesSlice.moviesPopular;
     }
-    console.log("runs 0");
+
     return fetchPopular(true, category);
   },
 );
@@ -29,7 +29,7 @@ export const getUpcomingMovies = createAsyncThunk(
     if (moviesSlice.moviesUpcoming) {
       return moviesSlice.moviesUpcoming;
     }
-    console.log("runs 1");
+
     return fetchPopular(true, category);
   },
 );
@@ -42,7 +42,7 @@ export const getTopRatedMovies = createAsyncThunk(
     if (moviesSlice.moviesTopRated) {
       return moviesSlice.moviesTopRated;
     }
-    console.log("runs 2");
+
     return fetchPopular(true, category);
   },
 );

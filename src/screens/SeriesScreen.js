@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 
 import {StyleSheet, View} from "react-native";
 import {useDispatch, useSelector} from "react-redux";
@@ -20,13 +20,17 @@ export default function HomeScreen({route}) {
 
   useEffect(() => {
     dispatch(getPopularSeries());
-  }, []);
+  }, [dispatch]);
 
-  const onChangeCategory = category => {
-    category === 0 && dispatch(getPopularSeries(category));
-    category === 1 && dispatch(getUpcomingSeries(category));
-    category === 2 && dispatch(getTopRatedSeries(category));
-  };
+  const onChangeCategory = useCallback(
+    category => {
+      category === 0 && dispatch(getPopularSeries(category));
+      category === 1 && dispatch(getUpcomingSeries(category));
+      category === 2 && dispatch(getTopRatedSeries(category));
+    },
+    [dispatch],
+  );
+
   return (
     <View style={styles.container}>
       <SearchBarItem

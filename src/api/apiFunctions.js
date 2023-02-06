@@ -73,15 +73,29 @@ export const fetchGenres = async () => {
 export const fetchDetails = async ({id, type}) => {
   const movieDetails = `https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=en-US`;
   const seriesDetails = `https://api.themoviedb.org/3/tv/${id}?api_key=${API_KEY}&language=en-US`;
-
+  //refactor?
   if (type === "movie") {
-    const {data} = await axios.get(movieDetails);
+    try {
+      const {data} = await axios.get(movieDetails);
 
-    return data;
+      return data;
+    } catch (e) {}
   } else {
-    const {data} = await axios.get(seriesDetails);
-    data["release_date"] = data["first_air_date"];
-    data["title"] = data["name"];
-    return data;
+    try {
+      const {data} = await axios.get(seriesDetails);
+      data["release_date"] = data["first_air_date"];
+      data["title"] = data["name"];
+      return data;
+    } catch (e) {}
   }
+};
+
+export const fetchVideo = async ({type, id}) => {
+  const videoLink = `https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${API_KEY}&language=en-US`;
+  try {
+    const {data} = await axios.get(videoLink);
+    const link = data?.results.find(item => item.type === "Trailer");
+    console.log(data);
+    return link?.key;
+  } catch (e) {}
 };

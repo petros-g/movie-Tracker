@@ -5,9 +5,10 @@ import FastImage from "react-native-fast-image";
 import ReactNativeModal from "react-native-modal";
 import {useSelector} from "react-redux";
 
-function DetailModal({isVisible, onBackdropPress, data, id}) {
+function DetailModal({isVisible, onBackdropPress, id}) {
   const {genres} = useSelector(state => state.moviesSlice);
-
+  const detailState = useSelector(res => res.detailsSlice);
+  const data = detailState?.detailsData;
   const genresFinal = data?.genres?.map(id => {
     return genres?.find(genre => genre.id === id.id);
   });
@@ -18,7 +19,7 @@ function DetailModal({isVisible, onBackdropPress, data, id}) {
         animationIn={"fadeIn"}
         animationOut={"fadeOut"}
         onBackdropPress={onBackdropPress}
-        isVisible={isVisible}>
+        isVisible={detailState?.isDetailModalVisible}>
         <View style={styles.container}>
           <FastImage
             resizeMode="cover"

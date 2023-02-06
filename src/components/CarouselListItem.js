@@ -9,18 +9,17 @@ import {
 } from "react-native";
 import {AnimatedCircularProgress} from "react-native-circular-progress";
 import FastImage from "react-native-fast-image";
-import DetailModal from "./DetailModal";
-import VideoModal from "./VideoModal";
+import {useDispatch} from "react-redux";
 
 export default function CarouselListItem({
   item,
   index,
   scrollX,
   genres,
-  tabIndex,
-}) {
-  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
 
+  onOpenVideoModal,
+  onOpenDetailModal,
+}) {
   const {width} = useWindowDimensions();
   const IMAGE_WIDTH = useMemo(() => width * 0.7, [width]);
   const IMAGE_HEIGHT = useMemo(() => IMAGE_WIDTH * 1.54, [IMAGE_WIDTH]);
@@ -28,7 +27,6 @@ export default function CarouselListItem({
   const rotateY = useRef(new Animated.Value(0)).current;
 
   const [toggled, setToggled] = useState(false);
-  const [isVideoModalVisible, setIsVideoModalVisible] = useState(false);
 
   const toggleAnimation = () => {
     setToggled(prev => !prev);
@@ -83,7 +81,7 @@ export default function CarouselListItem({
           }}>
           <View style={{position: "absolute", zIndex: 10}}>
             <Icon
-              onPress={() => setIsVideoModalVisible(true)}
+              onPress={() => onOpenVideoModal(item?.id)}
               size={20}
               reverse
               name="play"
@@ -188,7 +186,7 @@ export default function CarouselListItem({
           </View>
 
           <Button
-            onPress={() => setIsDetailModalVisible(true)}
+            onPress={() => onOpenDetailModal(item?.id)}
             icon={{
               name: "arrow-up",
               type: "font-awesome",
@@ -206,17 +204,6 @@ export default function CarouselListItem({
           />
         </Animated.View>
       </TouchableWithoutFeedback>
-      <DetailModal
-        data={item}
-        isVisible={isDetailModalVisible}
-        onBackdropPress={() => setIsDetailModalVisible(false)}
-      />
-      <VideoModal
-        tabIndex={tabIndex}
-        id={item?.id}
-        onBackdropPress={() => setIsVideoModalVisible(false)}
-        isVisible={isVideoModalVisible}
-      />
     </View>
   );
 }
