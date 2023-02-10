@@ -3,6 +3,7 @@ import {useCallback, useEffect, useState} from "react";
 import {StyleSheet, View} from "react-native";
 import {useDispatch, useSelector} from "react-redux";
 import CarouselList from "../components/CarouselList";
+import MainListsItem from "../components/MainListsItem";
 import SearchBarItem from "../components/SearchBarItem";
 import SimpleDropList from "../components/SimpleDropList";
 import {
@@ -33,15 +34,7 @@ export default function HomeScreen({route}) {
 
   return (
     <View style={styles.container}>
-      <SearchBarItem
-        setChangeLayout={setChangeLayout}
-        onChangeCategory={onChangeCategory}
-      />
-      {changeLayout ? (
-        <CarouselList popularMovies={seriesCurrent} />
-      ) : (
-        <SimpleDropList data={seriesCurrent} />
-      )}
+      <MainListsItem />
     </View>
   );
 }

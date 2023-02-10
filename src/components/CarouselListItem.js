@@ -16,7 +16,6 @@ export default function CarouselListItem({
   index,
   scrollX,
   genres,
-
   onOpenVideoModal,
   onOpenDetailModal,
 }) {
@@ -43,18 +42,26 @@ export default function CarouselListItem({
     outputRange: ["360deg", "270deg"],
     extrapolate: "clamp",
   });
-  const rotateDetails = rotateY.interpolate({
-    inputRange: [60, 100],
-    outputRange: ["90deg", "0deg"],
-    extrapolate: "clamp",
-  });
+
+  const rotateDetails = useMemo(
+    () =>
+      rotateY.interpolate({
+        inputRange: [60, 100],
+        outputRange: ["90deg", "0deg"],
+        extrapolate: "clamp",
+      }),
+    [rotateY],
+  );
+
   const opacity = scrollX.interpolate({
     inputRange: [(index - 1) * width, index * width, (index + 1) * width],
     outputRange: [0, 1, 0],
   });
 
   const genresFinal = item?.genres?.map(id => {
-    return genres?.find(genre => genre.id === id);
+    if (genres) {
+      return genres?.find(genre => genre.id === id);
+    }
   });
 
   const {
@@ -106,7 +113,7 @@ export default function CarouselListItem({
               width: IMAGE_WIDTH,
               borderRadius: 16,
             }}
-            resizeMode="cover"
+            resizeMode={FastImage.resizeMode.cover}
             source={{
               uri: `https://image.tmdb.org/t/p/w500${item.poster}`,
             }}

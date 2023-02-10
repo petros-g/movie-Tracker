@@ -9,7 +9,7 @@ import {
 import {getVideoData, setIsVideoModalVisible} from "../redux/slices/videoSlice";
 import CarouselListItem from "./CarouselListItem";
 
-const CarouselList = ({popularMovies}) => {
+const CarouselList = ({data}) => {
   const dispatch = useDispatch();
   const {genres} = useSelector(state => state.moviesSlice);
   const {width} = useWindowDimensions();
@@ -32,7 +32,7 @@ const CarouselList = ({popularMovies}) => {
   return (
     <>
       <View style={StyleSheet.absoluteFillObject}>
-        {popularMovies?.map((item, index) => {
+        {data?.map((item, index) => {
           const opacity = scrollX.interpolate({
             inputRange: [
               (index - 1) * width,
@@ -44,7 +44,7 @@ const CarouselList = ({popularMovies}) => {
           return (
             <Animated.Image
               key={`image-${item?.id}`}
-              blurRadius={3}
+              blurRadius={5}
               source={{
                 uri: `https://image.tmdb.org/t/p/w300${item.poster}`,
               }}
@@ -75,7 +75,7 @@ const CarouselList = ({popularMovies}) => {
           );
         }}
         keyExtractor={(item, index) => item?.id.toString()}
-        data={popularMovies}
+        data={data}
       />
     </>
   );
