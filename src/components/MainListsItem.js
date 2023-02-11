@@ -1,16 +1,25 @@
-import {StyleSheet, Text, View} from "react-native";
-import React, {useEffect, useState} from "react";
-import SearchBarItem from "./SearchBarItem";
-import CarouselList from "./CarouselList";
-import SimpleDropList from "./SimpleDropList";
+import React, {useCallback, useEffect, useState} from "react";
+import {StyleSheet} from "react-native";
 import {useDispatch, useSelector} from "react-redux";
-import {getGenres, getPopularMovies} from "../redux/slices/moviesSlice";
-import {getPopularSeries} from "../redux/slices/seriesSlice";
+import {
+  getGenres,
+  getPopularMovies,
+  getTopRatedMovies,
+  getUpcomingMovies,
+} from "../redux/slices/moviesSlice";
+import {
+  getPopularSeries,
+  getTopRatedSeries,
+  getUpcomingSeries,
+} from "../redux/slices/seriesSlice";
+import CarouselList from "./Carousel/CarouselList";
+import SearchBarItem from "./SearchBarItem";
+import SimpleDropList from "./SimpleDropList";
 
 export default function MainListsItem({type}) {
   const dispatch = useDispatch();
   const [changeLayout, setChangeLayout] = useState(false);
-  const state = useSelector(state => state);
+  const state = useSelector(res => res);
 
   useEffect(() => {
     if (type === "movie") {
@@ -18,12 +27,32 @@ export default function MainListsItem({type}) {
     } else {
       dispatch(getPopularSeries());
     }
-    dispatch(getGenres());
   }, [dispatch, type]);
 
-  const onChangeCategory = category => {
-    dispatch(getPopularMovies(category)); //to fix
-  };
+  const onChangeCategory = useCallback(
+    category => {
+      switch (category) {
+        case 0:
+          type
+            ? dispatch(getPopularMovies(category))
+            : dispatch(getPopularSeries(category));
+          break;
+        case 1:
+          type
+            ? dispatch(getUpcomingMovies(category))
+            : dispatch(getUpcomingSeries(category));
+          break;
+        case 2:
+          type
+            ? dispatch(getTopRatedMovies(category))
+            : dispatch(getTopRatedSeries(category));
+          break;
+        default:
+          break;
+      }
+    },
+    [dispatch, type],
+  );
 
   const data =
     type === "movie"

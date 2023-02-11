@@ -2,6 +2,7 @@ import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {Icon} from "@rneui/themed";
 import React from "react";
 import {StyleSheet} from "react-native";
+import MoviesScreen from "../screens/MovieScreen";
 import HomeScreen from "../screens/MovieScreen";
 import SeriesScreen from "../screens/SeriesScreen";
 
@@ -27,7 +28,7 @@ const BottomBar = () => {
           tabBarActiveTintColor: "white",
         }}
         name="Movies"
-        component={HomeScreen}
+        component={MoviesScreen}
       />
       <Tab.Screen
         options={{

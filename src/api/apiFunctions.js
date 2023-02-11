@@ -11,51 +11,58 @@ const movieGenres = `https://api.themoviedb.org/3/genre/movie/list?api_key=${API
 const seriesGenres = `https://api.themoviedb.org/3/genre/tv/list?api_key=${API_KEY}&language=en-US`;
 
 export const fetchPopular = async (type, category) => {
-  let categoryMoviesLink =
-    category === 0
-      ? popularMoviesLink
-      : category === 1
-      ? upcomingMoviesLink
-      : topMoviesLink;
-  let categorySeriesLink =
-    category === 0
-      ? popularTVLink
-      : category === 1
-      ? upcomingTVLink
-      : topTVLink;
+  let categorySeriesLink;
+  let categoryMoviesLink;
 
-  if (!category) {
-    categoryMoviesLink = popularMoviesLink;
-    categorySeriesLink = popularTVLink;
+  switch (category) {
+    case 0:
+      categoryMoviesLink = popularMoviesLink;
+      categorySeriesLink = popularTVLink;
+      break;
+    case 1:
+      categoryMoviesLink = upcomingMoviesLink;
+      categorySeriesLink = upcomingTVLink;
+      break;
+    case 2:
+      categoryMoviesLink = topMoviesLink;
+      categorySeriesLink = topTVLink;
+      break;
+    default:
+      categoryMoviesLink = popularMoviesLink;
+      categorySeriesLink = popularTVLink;
+      break;
   }
+
   const linkToFetch = type ? categoryMoviesLink : categorySeriesLink;
-  const {data} = await axios.get(linkToFetch);
+  try {
+    const {data} = await axios.get(linkToFetch);
 
-  const finalData = data?.results.map(
-    ({
-      release_date,
-      original_title,
-      poster_path,
-      vote_average,
-      backdrop_path,
-      overview,
-      genre_ids,
-      id,
-      original_name,
-      first_air_date,
-    }) => ({
-      poster: poster_path,
-      rating: vote_average,
-      backdrop: backdrop_path,
-      title: type ? original_title : original_name,
-      description: overview,
-      genres: genre_ids,
-      release: type ? release_date : first_air_date,
-      id,
-    }),
-  );
+    const finalData = data?.results.map(
+      ({
+        release_date,
+        original_title,
+        poster_path,
+        vote_average,
+        backdrop_path,
+        overview,
+        genre_ids,
+        id,
+        original_name,
+        first_air_date,
+      }) => ({
+        poster: poster_path,
+        rating: vote_average,
+        backdrop: backdrop_path,
+        title: type ? original_title : original_name,
+        description: overview,
+        genres: genre_ids,
+        release: type ? release_date : first_air_date,
+        id,
+      }),
+    );
 
-  return finalData;
+    return finalData;
+  } catch {}
 };
 
 export const fetchGenres = async () => {
@@ -95,7 +102,7 @@ export const fetchVideo = async ({type, id}) => {
   try {
     const {data} = await axios.get(videoLink);
     const link = data?.results.find(item => item.type === "Trailer");
-    console.log(data);
+
     return link?.key;
   } catch (e) {}
 };

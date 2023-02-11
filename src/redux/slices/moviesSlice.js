@@ -6,7 +6,7 @@ const initialState = {
   moviesPopular: null,
   moviesUpcoming: null,
   moviesTopRated: null,
-  genres: {},
+  genres: undefined,
 };
 
 export const getPopularMovies = createAsyncThunk(
@@ -14,7 +14,7 @@ export const getPopularMovies = createAsyncThunk(
   (category, {getState}) => {
     const {moviesSlice} = getState();
 
-    if (moviesSlice?.moviesPopular) {
+    if (moviesSlice.moviesPopular) {
       return moviesSlice.moviesPopular;
     }
 
@@ -47,9 +47,17 @@ export const getTopRatedMovies = createAsyncThunk(
   },
 );
 
-export const getGenres = createAsyncThunk("movies/getGenres", () => {
-  return fetchGenres();
-});
+export const getGenres = createAsyncThunk(
+  "movies/getGenres",
+  (par, {getState}) => {
+    const {moviesSlice} = getState();
+    if (moviesSlice.genres) {
+      return moviesSlice.genres;
+    }
+
+    return fetchGenres();
+  },
+);
 
 export const moviesSlice = createSlice({
   name: "movies",

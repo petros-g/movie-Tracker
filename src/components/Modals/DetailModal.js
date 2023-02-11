@@ -1,11 +1,11 @@
 import {Chip} from "@rneui/themed";
-import React, {memo, useEffect, useState} from "react";
+import React, {memo} from "react";
 import {StyleSheet, Text, View} from "react-native";
 import FastImage from "react-native-fast-image";
 import ReactNativeModal from "react-native-modal";
 import {useSelector} from "react-redux";
 
-function DetailModal({isVisible, onBackdropPress, id}) {
+function DetailModal({onBackdropPress}) {
   const {genres} = useSelector(state => state.moviesSlice);
   const detailState = useSelector(res => res.detailsSlice);
   const data = detailState?.detailsData;

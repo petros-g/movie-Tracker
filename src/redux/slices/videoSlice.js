@@ -20,7 +20,6 @@ export const videoSlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(getVideoData.fulfilled, (state, action) => {
-      console.log(action);
       state.videoData = action.payload;
     });
   },

@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import {AnimatedCircularProgress} from "react-native-circular-progress";
 import FastImage from "react-native-fast-image";
-import {useDispatch} from "react-redux";
 
 export default function CarouselListItem({
   item,

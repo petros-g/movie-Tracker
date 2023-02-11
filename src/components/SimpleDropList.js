@@ -15,17 +15,6 @@ const SimpleDropList = ({data, type}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [datas, setData] = useState(false);
 
-  // const goToDetail = useCallback(
-  //   id => {
-  //     setIsLoading(true);
-  //     fetchDetails(id, type).then(res => {
-  //       setData(res);
-  //       setIsDetailModalVisible(true);
-  //     });
-  //   },
-  //   [type],
-  // );
-
   const onOpenModal = id => {
     dispatch(setDetailModalVisible(true));
     dispatch(getDetailsData({id: id, type}));

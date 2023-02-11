@@ -5,8 +5,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {
   getDetailsData,
   setDetailModalVisible,
-} from "../redux/slices/detailsSlice";
-import {getVideoData, setIsVideoModalVisible} from "../redux/slices/videoSlice";
+} from "../../redux/slices/detailsSlice";
+import {
+  getVideoData,
+  setIsVideoModalVisible,
+} from "../../redux/slices/videoSlice";
 import CarouselListItem from "./CarouselListItem";
 
 const CarouselList = ({data}) => {

@@ -1,16 +1,21 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 
 import {StyleSheet, View} from "react-native";
-import {useDispatch, useSelector} from "react-redux";
-import DetailModal from "../components/DetailModal";
+import {useDispatch} from "react-redux";
 import MainListsItem from "../components/MainListsItem";
-import VideoModal from "../components/VideoModal";
+import DetailModal from "../components/Modals/DetailModal";
+import VideoModal from "../components/Modals/VideoModal";
 import {setDetailModalVisible} from "../redux/slices/detailsSlice";
 import {getGenres, getPopularMovies} from "../redux/slices/moviesSlice";
 import {setIsVideoModalVisible} from "../redux/slices/videoSlice";
 
-export default function HomeScreen({route}) {
+export default function MoviesScreen({route}) {
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getPopularMovies());
+    dispatch(getGenres());
+  }, [dispatch]);
 
   return (
     <View style={styles.container}>

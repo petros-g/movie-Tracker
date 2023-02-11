@@ -8,10 +8,14 @@ import {
 } from "@rneui/themed";
 import React, {useState} from "react";
 import {StyleSheet, View} from "react-native";
+import ReactNativeModal from "react-native-modal";
 
 const SearchBarItem = ({setChangeLayout, onChangeCategory}) => {
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [searchText, setSearchText] = useState();
+  const [isSearchModalVisible, setIsSearchModalVisible] = useState(false);
+  const [seatchBarHeight, setSearchBarHeight] = useState(false);
   const buttons = ["Most Popular", "Upcoming", "Top Rated"];
 
   return (
@@ -35,6 +39,7 @@ const SearchBarItem = ({setChangeLayout, onChangeCategory}) => {
       />
 
       <SearchBar
+        onLayout={e => setSearchBarHeight(e.nativeEvent.layout.height)}
         inputContainerStyle={{backgroundColor: "#ffffff20"}}
         containerStyle={{
           backgroundColor: "transparent",
@@ -44,6 +49,9 @@ const SearchBarItem = ({setChangeLayout, onChangeCategory}) => {
         }}
         placeholder="Search"
         round
+        value={searchText}
+        onChangeText={setSearchText}
+        style={{zIndex: 10}}
         rightIcon={{type: "font-awesome", name: "search"}}
       />
       <Overlay
