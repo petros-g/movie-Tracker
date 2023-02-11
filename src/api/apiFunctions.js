@@ -106,3 +106,32 @@ export const fetchVideo = async ({type, id}) => {
     return link?.key;
   } catch (e) {}
 };
+
+export const fetchSearchResults = async keyword => {
+  const searchQuery = `https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&language=en-US&page=1&include_adult=false&query=${keyword}`;
+
+  try {
+    const {data} = await axios.get(searchQuery);
+    const finalData = data?.results.map(
+      ({
+        release_date,
+        original_title,
+        poster_path,
+        vote_average,
+        media_type,
+        id,
+        original_name,
+        first_air_date,
+      }) => ({
+        poster: poster_path,
+        type: media_type,
+        rating: vote_average,
+        title: original_title || original_name,
+        release: release_date || first_air_date,
+        id,
+      }),
+    );
+
+    return finalData;
+  } catch {}
+};

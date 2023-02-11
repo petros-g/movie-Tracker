@@ -1,5 +1,7 @@
+import {Text} from "@rneui/themed";
 import React, {useCallback, useEffect, useState} from "react";
-import {StyleSheet} from "react-native";
+import {ScrollView, StyleSheet, View} from "react-native";
+
 import {useDispatch, useSelector} from "react-redux";
 import {
   getGenres,
@@ -19,6 +21,7 @@ import SimpleDropList from "./SimpleDropList";
 export default function MainListsItem({type}) {
   const dispatch = useDispatch();
   const [changeLayout, setChangeLayout] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const state = useSelector(res => res);
 
   useEffect(() => {
@@ -62,10 +65,28 @@ export default function MainListsItem({type}) {
   return (
     <>
       <SearchBarItem
+        type={type}
         setChangeLayout={setChangeLayout}
         onChangeCategory={onChangeCategory}
+        setIsSearching={setIsSearching}
       />
-      {changeLayout ? (
+      {isSearching ? (
+        <View
+          style={{
+            backgroundColor: "white",
+            flex: 1,
+          }}>
+          <ScrollView>
+            {state?.moviesSlice?.searchResults?.map(item => {
+              return (
+                <View style={{borderWidth: 1, padding: 30}}>
+                  <Text style={{color: "black"}}>{item.title}</Text>
+                </View>
+              );
+            })}
+          </ScrollView>
+        </View>
+      ) : changeLayout ? (
         <CarouselList data={data} />
       ) : (
         <SimpleDropList data={data} type={type} />

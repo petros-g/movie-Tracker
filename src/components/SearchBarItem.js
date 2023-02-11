@@ -6,17 +6,42 @@ import {
   SearchBar,
   Text,
 } from "@rneui/themed";
-import React, {useState} from "react";
+import {debounce, once} from "lodash";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {StyleSheet, View} from "react-native";
-import ReactNativeModal from "react-native-modal";
+import {useDispatch} from "react-redux";
+import {getSearchResults, setSearchResults} from "../redux/slices/moviesSlice";
 
-const SearchBarItem = ({setChangeLayout, onChangeCategory}) => {
+const SearchBarItem = ({
+  setChangeLayout,
+  onChangeCategory,
+  setIsSearching,
+  type,
+}) => {
+  const dispatch = useDispatch();
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [searchText, setSearchText] = useState();
-  const [isSearchModalVisible, setIsSearchModalVisible] = useState(false);
-  const [seatchBarHeight, setSearchBarHeight] = useState(false);
+  const [searchText, setSearchText] = useState("");
   const buttons = ["Most Popular", "Upcoming", "Top Rated"];
+  const searchBarRef = useRef();
+
+  const onSearch = searchText => {
+    setSearchText(searchText);
+    changeTextDebouncer(searchText);
+  };
+
+  const changeTextDebouncer = useCallback(
+    debounce(searchText => dispatch(getSearchResults(searchText)), 1000),
+    [],
+  );
+
+  const onSearchBackPress = useCallback(() => {
+    setIsSearching(false);
+    dispatch(setSearchResults());
+    setSearchText("");
+    searchBarRef.current.blur();
+    searchBarRef.current.isFocused = false;
+  }, []);
 
   return (
     <View
@@ -39,7 +64,7 @@ const SearchBarItem = ({setChangeLayout, onChangeCategory}) => {
       />
 
       <SearchBar
-        onLayout={e => setSearchBarHeight(e.nativeEvent.layout.height)}
+        ref={searchBarRef}
         inputContainerStyle={{backgroundColor: "#ffffff20"}}
         containerStyle={{
           backgroundColor: "transparent",
@@ -47,12 +72,21 @@ const SearchBarItem = ({setChangeLayout, onChangeCategory}) => {
           borderRadius: 10,
           flex: 1,
         }}
+        onFocus={() => {
+          searchBarRef.current.isFocused = true;
+          setIsSearching(true);
+        }}
         placeholder="Search"
         round
         value={searchText}
-        onChangeText={setSearchText}
-        style={{zIndex: 10}}
-        rightIcon={{type: "font-awesome", name: "search"}}
+        onChangeText={onSearch}
+        searchIcon={
+          <Icon
+            onPress={onSearchBackPress}
+            name={searchBarRef?.current?.isFocused ? "arrow-back" : null}
+            color="#00aced"
+          />
+        }
       />
       <Overlay
         isVisible={isOverlayVisible}

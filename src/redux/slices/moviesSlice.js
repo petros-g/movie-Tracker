@@ -1,5 +1,9 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {fetchGenres, fetchPopular} from "../../api/apiFunctions";
+import {
+  fetchGenres,
+  fetchPopular,
+  fetchSearchResults,
+} from "../../api/apiFunctions";
 
 const initialState = {
   moviesCurrent: null,
@@ -7,6 +11,7 @@ const initialState = {
   moviesUpcoming: null,
   moviesTopRated: null,
   genres: undefined,
+  searchResults: null,
 };
 
 export const getPopularMovies = createAsyncThunk(
@@ -59,12 +64,23 @@ export const getGenres = createAsyncThunk(
   },
 );
 
+export const getSearchResults = createAsyncThunk(
+  "movies/getSearchResults",
+  object => {
+    if (!object) return;
+    return fetchSearchResults(object);
+  },
+);
+
 export const moviesSlice = createSlice({
   name: "movies",
   initialState,
   reducers: {
     setMoviesPopular: (state, action) => {
       return {...state, moviesPopular: action.payload};
+    },
+    setSearchResults: (state, action) => {
+      return {...state, searchResults: null};
     },
   },
   extraReducers: builder => {
@@ -83,9 +99,12 @@ export const moviesSlice = createSlice({
     builder.addCase(getGenres.fulfilled, (state, action) => {
       state.genres = action.payload;
     });
+    builder.addCase(getSearchResults.fulfilled, (state, action) => {
+      state.searchResults = action.payload;
+    });
   },
 });
 
-export const {setMoviesPopular} = moviesSlice.actions;
+export const {setMoviesPopular, setSearchResults} = moviesSlice.actions;
 
 export default moviesSlice.reducer;
