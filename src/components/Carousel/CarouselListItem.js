@@ -17,6 +17,7 @@ export default function CarouselListItem({
   genres,
   onOpenVideoModal,
   onOpenDetailModal,
+  onAddToWatchlist,
 }) {
   const {width} = useWindowDimensions();
   const IMAGE_WIDTH = useMemo(() => width * 0.7, [width]);
@@ -144,23 +145,25 @@ export default function CarouselListItem({
               flexDirection: "row",
               justifyContent: "space-between",
             }}>
-            <Chip
-              title={item?.release.slice(0, 4)}
-              size="sm"
-              icon={{
-                name: "calendar",
-                type: "font-awesome",
-                size: 15,
-                color: "white",
-              }}
-              raised
-              color={"#292b30"}
-              buttonStyle={{elevation: 8}}
-              containerStyle={{
-                marginLeft: 10,
-                alignSelf: "flex-start",
-              }}
-            />
+            <View style={{flexDirection: "row"}}>
+              <Chip
+                title={item?.release.slice(0, 4)}
+                size="sm"
+                icon={{
+                  name: "calendar",
+                  type: "font-awesome",
+                  size: 15,
+                  color: "white",
+                }}
+                raised
+                color={"#292b30"}
+                buttonStyle={{elevation: 8}}
+                containerStyle={{
+                  marginLeft: 10,
+                  alignSelf: "flex-start",
+                }}
+              />
+            </View>
             <Text style={{right: 10, fontSize: 20}}>{item.rating}⭐</Text>
           </View>
           <View style={{marginTop: 10}} />

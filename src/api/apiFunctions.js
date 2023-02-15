@@ -34,6 +34,7 @@ export const fetchPopular = async (type, category) => {
   }
 
   const linkToFetch = type ? categoryMoviesLink : categorySeriesLink;
+
   try {
     const {data} = await axios.get(linkToFetch);
 
@@ -58,6 +59,7 @@ export const fetchPopular = async (type, category) => {
         genres: genre_ids,
         release: type ? release_date : first_air_date,
         id,
+        type: type ? "movie" : "serie",
       }),
     );
 
@@ -112,6 +114,7 @@ export const fetchSearchResults = async keyword => {
 
   try {
     const {data} = await axios.get(searchQuery);
+
     const finalData = data?.results.map(
       ({
         release_date,
@@ -131,7 +134,8 @@ export const fetchSearchResults = async keyword => {
         id,
       }),
     );
+    const filteredData = finalData?.filter(item => item.poster);
 
-    return finalData;
+    return filteredData;
   } catch {}
 };

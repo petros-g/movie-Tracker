@@ -2,20 +2,17 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {fetchDetails, fetchGenres} from "../../api/apiFunctions";
 
 const initialState = {
-  detailsData: {},
+  detailsData: null,
   isDetailModalVisible: false,
 };
 
-export const getDetailsData = createAsyncThunk(
-  "getDetailsData",
-  (object, {getState}) => {
-    const {detailsSlice} = getState();
-    if (object.id === detailsSlice?.detailsData?.id) {
-      return detailsSlice?.detailsData;
-    }
-    return fetchDetails(object);
-  },
-);
+export const getDetailsData = createAsyncThunk("getDetailsData", object => {
+  // const {detailsSlice} = getState();
+  // if (object.id === detailsSlice?.detailsData?.id) {
+  //   return detailsSlice?.detailsData;
+  // }
+  return fetchDetails(object);
+});
 
 export const detailsSlice = createSlice({
   name: "detailSlice",

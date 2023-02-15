@@ -7,6 +7,7 @@ import DetailModal from "../components/Modals/DetailModal";
 import VideoModal from "../components/Modals/VideoModal";
 import {setDetailModalVisible} from "../redux/slices/detailsSlice";
 import {getGenres, getPopularMovies} from "../redux/slices/moviesSlice";
+import {getPopularSeries} from "../redux/slices/seriesSlice";
 import {setIsVideoModalVisible} from "../redux/slices/videoSlice";
 
 export default function MoviesScreen({route}) {
@@ -15,6 +16,7 @@ export default function MoviesScreen({route}) {
   useEffect(() => {
     dispatch(getPopularMovies());
     dispatch(getGenres());
+    dispatch(getPopularSeries());
   }, [dispatch]);
 
   return (

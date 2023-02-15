@@ -1,9 +1,9 @@
 import {configureStore} from "@reduxjs/toolkit";
-import {rootReducer} from "./slices";
+import detailsSlice from "./slices/detailsSlice";
 import moviesSlice from "./slices/moviesSlice";
 import seriesSlice from "./slices/seriesSlice";
-import detailsSlice from "./slices/detailsSlice";
 import videoSlice from "./slices/videoSlice";
+import watchlistSlice from "./slices/watchlistSlice";
 
 export default configureStore({
   reducer: {
@@ -11,5 +11,6 @@ export default configureStore({
     seriesSlice,
     detailsSlice,
     videoSlice,
+    watchlistSlice,
   },
 });

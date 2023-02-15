@@ -1,8 +1,14 @@
-import {Text} from "@rneui/themed";
+import {Chip, Text} from "@rneui/themed";
 import React, {useCallback, useEffect, useState} from "react";
+import {TouchableOpacity} from "react-native";
 import {ScrollView, StyleSheet, View} from "react-native";
+import FastImage from "react-native-fast-image";
 
 import {useDispatch, useSelector} from "react-redux";
+import {
+  getDetailsData,
+  setDetailModalVisible,
+} from "../redux/slices/detailsSlice";
 import {
   getGenres,
   getPopularMovies,
@@ -23,14 +29,6 @@ export default function MainListsItem({type}) {
   const [changeLayout, setChangeLayout] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const state = useSelector(res => res);
-
-  useEffect(() => {
-    if (type === "movie") {
-      dispatch(getPopularMovies());
-    } else {
-      dispatch(getPopularSeries());
-    }
-  }, [dispatch, type]);
 
   const onChangeCategory = useCallback(
     category => {
@@ -62,6 +60,11 @@ export default function MainListsItem({type}) {
       ? state?.moviesSlice.moviesCurrent
       : state?.seriesSlice.seriesCurrent;
 
+  const onOpenModal = (id, type) => {
+    dispatch(setDetailModalVisible(true));
+    dispatch(getDetailsData({id: id, type}));
+  };
+
   return (
     <>
       <SearchBarItem
@@ -73,15 +76,72 @@ export default function MainListsItem({type}) {
       {isSearching ? (
         <View
           style={{
-            backgroundColor: "white",
+            backgroundColor: "#18181c",
             flex: 1,
           }}>
           <ScrollView>
             {state?.moviesSlice?.searchResults?.map(item => {
               return (
-                <View style={{borderWidth: 1, padding: 30}}>
-                  <Text style={{color: "black"}}>{item.title}</Text>
-                </View>
+                <TouchableOpacity
+                  key={item?.id}
+                  onPress={() => onOpenModal(item?.id, item?.type)}
+                  style={{
+                    padding: 10,
+                    flexDirection: "row",
+
+                    flex: 1,
+                    margin: 0,
+                  }}>
+                  <FastImage
+                    style={{height: 180, width: 120}}
+                    resizeMode={FastImage.resizeMode.contain}
+                    source={{
+                      uri: `https://image.tmdb.org/t/p/w200${item.poster}`,
+                    }}
+                  />
+                  <View
+                    style={{
+                      flex: 1,
+                      marginLeft: 10,
+                      justifyContent: "space-evenly",
+                    }}>
+                    <Text
+                      style={{
+                        color: "white",
+
+                        fontWeight: "bold",
+                        fontSize: 20,
+                      }}>
+                      {item.title}{" "}
+                      <Text style={{color: "gray", fontSize: 15}}>
+                        ({item.type})
+                      </Text>
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        color: "white",
+                      }}>
+                      {item?.rating?.toFixed(1)}⭐
+                    </Text>
+                    <Chip
+                      title={item?.release?.slice(0, 4)}
+                      size="sm"
+                      icon={{
+                        name: "calendar",
+                        type: "font-awesome",
+                        size: 15,
+                        color: "white",
+                      }}
+                      raised
+                      color={"#292b30"}
+                      buttonStyle={{elevation: 8}}
+                      containerStyle={{
+                        alignSelf: "flex-start",
+                      }}
+                    />
+                  </View>
+                </TouchableOpacity>
               );
             })}
           </ScrollView>

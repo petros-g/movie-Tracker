@@ -5,6 +5,7 @@ import {StyleSheet} from "react-native";
 import MoviesScreen from "../screens/MovieScreen";
 import HomeScreen from "../screens/MovieScreen";
 import SeriesScreen from "../screens/SeriesScreen";
+import WatchlistScreen from "../screens/WatchlistScreen";
 
 const BottomBar = () => {
   const Tab = createBottomTabNavigator();
@@ -39,6 +40,16 @@ const BottomBar = () => {
         }}
         name="Series"
         component={SeriesScreen}
+      />
+      <Tab.Screen
+        options={{
+          tabBarIcon: () => {
+            return <Icon name="watch" color={"white"} />;
+          },
+          tabBarActiveTintColor: "white",
+        }}
+        name="Watchlist"
+        component={WatchlistScreen}
       />
     </Tab.Navigator>
   );
