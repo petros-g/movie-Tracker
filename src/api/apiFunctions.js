@@ -59,7 +59,7 @@ export const fetchPopular = async (type, category) => {
         genres: genre_ids,
         release: type ? release_date : first_air_date,
         id,
-        type: type ? "movie" : "serie",
+        type: type ? "movie" : "series",
       }),
     );
 
@@ -83,10 +83,10 @@ export const fetchDetails = async ({id, type}) => {
   const movieDetails = `https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=en-US`;
   const seriesDetails = `https://api.themoviedb.org/3/tv/${id}?api_key=${API_KEY}&language=en-US`;
   //refactor?
+  console.log(type);
   if (type === "movie") {
     try {
       const {data} = await axios.get(movieDetails);
-
       return data;
     } catch (e) {}
   } else {
@@ -94,6 +94,7 @@ export const fetchDetails = async ({id, type}) => {
       const {data} = await axios.get(seriesDetails);
       data["release_date"] = data["first_air_date"];
       data["title"] = data["name"];
+      data["type"] = "TV";
       return data;
     } catch (e) {}
   }

@@ -1,20 +1,46 @@
 import React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {FlatList, StyleSheet, Text, View} from "react-native";
 import {Button} from "@rneui/themed";
+import {useSelector} from "react-redux";
+import {Spacer} from "../components/Spacer";
+import {useState} from "react";
+import SearchViewContent from "../components/SearchViewContent";
 
 export default function WatchlistScreen() {
+  const {watchlist} = useSelector(state => state.watchlistSlice);
+  const [isMoviesFocused, setIsMoviesFocused] = useState(true);
+
+  //splitting watchlist into two arrays, movies and series
+  const [movies, series] = watchlist?.reduce(
+    ([movies, series], elem) => {
+      if (!elem.type) {
+        return [[...movies, elem], series];
+      } else {
+        return [movies, [...series, elem]];
+      }
+    },
+    [[], []],
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Watchlist</Text>
-      <View
-        style={{flexDirection: "row", justifyContent: "space-around", flex: 1}}>
-        <Button type="outline" buttonStyle={styles.buttons}>
+      <View style={{flexDirection: "row", justifyContent: "space-around"}}>
+        <Button
+          onPress={() => setIsMoviesFocused(true)}
+          type="outline"
+          buttonStyle={styles.buttons}>
           Movies
         </Button>
-        <Button type="outline" buttonStyle={styles.buttons}>
+        <Button
+          onPress={() => setIsMoviesFocused(false)}
+          type="outline"
+          buttonStyle={styles.buttons}>
           Series
         </Button>
       </View>
+      <Spacer height={16} />
+      <SearchViewContent data={isMoviesFocused ? movies : series} />
     </View>
   );
 }

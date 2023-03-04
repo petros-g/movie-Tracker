@@ -21,14 +21,14 @@ const CarouselList = ({data}) => {
 
   const onOpenDetailModal = id => {
     const tabIndex = navigation.getState().index;
-    const type = tabIndex === 0 ? "movie" : "tv";
+    const type = tabIndex === 0 ? "movie" : "series";
     dispatch(setDetailModalVisible(true));
     dispatch(getDetailsData({id: id, type}));
   };
 
   const onOpenVideoModal = id => {
     const tabIndex = navigation.getState().index;
-    const type = tabIndex === 0 ? "movie" : "tv";
+    const type = tabIndex === 0 ? "movie" : "series";
     dispatch(setIsVideoModalVisible(true));
     dispatch(getVideoData({id, type}));
   };

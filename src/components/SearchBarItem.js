@@ -1,3 +1,4 @@
+import {useIsFocused} from "@react-navigation/native";
 import {
   Button,
   ButtonGroup,
@@ -35,21 +36,23 @@ const SearchBarItem = ({
     [],
   );
 
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    !isFocused && onSearchBackPress();
+  }, [isFocused]);
+
   const onSearchBackPress = useCallback(() => {
     setIsSearching(false);
     dispatch(setSearchResults());
     setSearchText("");
     searchBarRef.current.blur();
+    searchBarRef.current.clear();
     searchBarRef.current.isFocused = false;
-  }, []);
+  }, [dispatch, setIsSearching]);
 
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-      }}>
+    <View style={styles.container}>
       <Icon
         name="list"
         color={"white"}
@@ -66,12 +69,7 @@ const SearchBarItem = ({
       <SearchBar
         ref={searchBarRef}
         inputContainerStyle={{backgroundColor: "#ffffff20"}}
-        containerStyle={{
-          backgroundColor: "transparent",
-          borderColor: "transparent",
-          borderRadius: 10,
-          flex: 1,
-        }}
+        containerStyle={styles.searchBarContainer}
         onFocus={() => {
           searchBarRef.current.isFocused = true;
           setIsSearching(true);
@@ -122,4 +120,16 @@ const SearchBarItem = ({
 
 export default SearchBarItem;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  searchBarContainer: {
+    backgroundColor: "transparent",
+    borderColor: "transparent",
+    borderRadius: 10,
+    flex: 1,
+  },
+});

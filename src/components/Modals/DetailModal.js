@@ -21,8 +21,8 @@ function DetailModal({onBackdropPress}) {
   const [itemAlreadyInList, setItemAlreadyInList] = useState(false);
 
   const isItemInWatchList = useCallback(() => {
-    return ids.includes(data?.id);
-  }, [data?.id]);
+    return watchlist.some(item => item.id === data?.id);
+  }, [data?.id, watchlist]);
 
   useEffect(() => {
     if (isItemInWatchList()) {
@@ -30,17 +30,17 @@ function DetailModal({onBackdropPress}) {
     } else {
       setItemAlreadyInList(false);
     }
-  }, [data?.id]);
+  }, [data?.id, isItemInWatchList]);
 
-  const onPress = () => {
+  const onAddItemToWatchList = useCallback(() => {
     if (itemAlreadyInList) {
       dispatch(deleteItemInList(data?.id));
       setItemAlreadyInList(false);
     } else {
-      dispatch(setWatchlist(data?.id));
+      dispatch(setWatchlist(data));
       setItemAlreadyInList(true);
     }
-  };
+  }, [data, dispatch, itemAlreadyInList]);
 
   return (
     <View>
@@ -93,7 +93,7 @@ function DetailModal({onBackdropPress}) {
                   }}
                 />
                 <Icon
-                  onPress={onPress}
+                  onPress={onAddItemToWatchList}
                   style={{marginLeft: 5}}
                   size={25}
                   name={itemAlreadyInList ? "heart" : "heart-outline"}

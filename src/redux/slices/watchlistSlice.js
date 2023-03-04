@@ -12,13 +12,13 @@ export const watchlistSlice = createSlice({
     setWatchlist: (state, action) => {
       return {
         ...state,
-        ids: [...state.ids, action.payload],
+        watchlist: [...state.watchlist, action.payload],
       };
     },
     deleteItemInList: (state, action) => {
       return {
         ...state,
-        ids: state.ids.filter(item => item !== action.payload),
+        watchlist: state.watchlist.filter(item => item.id !== action.payload),
       };
     },
   },

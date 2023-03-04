@@ -22,6 +22,7 @@ import {
 } from "../redux/slices/seriesSlice";
 import CarouselList from "./Carousel/CarouselList";
 import SearchBarItem from "./SearchBarItem";
+import SearchViewContent from "./SearchViewContent";
 import SimpleDropList from "./SimpleDropList";
 
 export default function MainListsItem({type}) {
@@ -60,11 +61,6 @@ export default function MainListsItem({type}) {
       ? state?.moviesSlice.moviesCurrent
       : state?.seriesSlice.seriesCurrent;
 
-  const onOpenModal = (id, type) => {
-    dispatch(setDetailModalVisible(true));
-    dispatch(getDetailsData({id: id, type}));
-  };
-
   return (
     <>
       <SearchBarItem
@@ -74,78 +70,7 @@ export default function MainListsItem({type}) {
         setIsSearching={setIsSearching}
       />
       {isSearching ? (
-        <View
-          style={{
-            backgroundColor: "#18181c",
-            flex: 1,
-          }}>
-          <ScrollView>
-            {state?.moviesSlice?.searchResults?.map(item => {
-              return (
-                <TouchableOpacity
-                  key={item?.id}
-                  onPress={() => onOpenModal(item?.id, item?.type)}
-                  style={{
-                    padding: 10,
-                    flexDirection: "row",
-
-                    flex: 1,
-                    margin: 0,
-                  }}>
-                  <FastImage
-                    style={{height: 180, width: 120}}
-                    resizeMode={FastImage.resizeMode.contain}
-                    source={{
-                      uri: `https://image.tmdb.org/t/p/w200${item.poster}`,
-                    }}
-                  />
-                  <View
-                    style={{
-                      flex: 1,
-                      marginLeft: 10,
-                      justifyContent: "space-evenly",
-                    }}>
-                    <Text
-                      style={{
-                        color: "white",
-
-                        fontWeight: "bold",
-                        fontSize: 20,
-                      }}>
-                      {item.title}{" "}
-                      <Text style={{color: "gray", fontSize: 15}}>
-                        ({item.type})
-                      </Text>
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 20,
-                        color: "white",
-                      }}>
-                      {item?.rating?.toFixed(1)}⭐
-                    </Text>
-                    <Chip
-                      title={item?.release?.slice(0, 4)}
-                      size="sm"
-                      icon={{
-                        name: "calendar",
-                        type: "font-awesome",
-                        size: 15,
-                        color: "white",
-                      }}
-                      raised
-                      color={"#292b30"}
-                      buttonStyle={{elevation: 8}}
-                      containerStyle={{
-                        alignSelf: "flex-start",
-                      }}
-                    />
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        </View>
+        <SearchViewContent state={state} />
       ) : changeLayout ? (
         <CarouselList data={data} />
       ) : (
