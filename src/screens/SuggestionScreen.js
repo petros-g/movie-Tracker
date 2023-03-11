@@ -19,36 +19,36 @@ const SuggestionScreen = () => {
   const [runtime, setRuntime] = useState(15);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
-  const suggestionAction = () => {
-    checksForAlreadyList();
-    if (!suggestionData) {
-      fetchSuggestions(watchType, year, rating, runtime).then(res => {
-        const newArray = res?.filter(
-          item => !alreadySearchedArray.includes(item.id),
-        );
-
-        setSuggestionData(newArray);
-      });
-    } else {
-      setDataIndex(prev => prev + 1);
-    }
-    if (isEmpty(suggestionData[dataIndex + 1]) && !isEmpty(suggestionData)) {
-      fetchSuggestions(watchType, year, rating, runtime, page).then(res => {
+  const fetchingFromApi = pageVal => {
+    fetchSuggestions(watchType, year, rating, runtime, pageVal || page).then(
+      res => {
         if (!isEmpty(res)) {
           const newArray = res?.filter(
             item => !alreadySearchedArray.includes(item.id),
           );
+          if (isEmpty(newArray)) {
+            setPage(prev => prev + 1);
+            Alert.alert("No suggestions found", "Try different filters");
+          }
           setSuggestionData(newArray);
         } else {
-          setSuggestionData("empty");
         }
-        setPage(prev => prev + 1);
-        setDataIndex(0);
-      });
+        if (!pageVal) {
+          setPage(prev => prev + 1);
+          setDataIndex(0);
+        }
+      },
+    );
+  };
+  const suggestionAction = () => {
+    checksForAlreadyList();
+    if (isEmpty(suggestionData)) {
+      fetchingFromApi(1);
+    } else {
+      setDataIndex(prev => prev + 1);
     }
-
-    if (suggestionData == "empty") {
-      Alert.alert("No suggestions found", "Try different filters");
+    if (isEmpty(suggestionData[dataIndex + 1]) && !isEmpty(suggestionData)) {
+      fetchingFromApi();
     }
   };
 
