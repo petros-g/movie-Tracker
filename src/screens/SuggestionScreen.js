@@ -20,12 +20,7 @@ const SuggestionScreen = () => {
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
   const suggestionAction = () => {
-    if (suggestionData[dataIndex]) {
-      setAlreadySearchedArray([
-        ...alreadySearchedArray,
-        suggestionData[dataIndex].id,
-      ]);
-    }
+    checksForAlreadyList();
     if (!suggestionData) {
       fetchSuggestions(watchType, year, rating, runtime).then(res => {
         const newArray = res?.filter(
@@ -54,6 +49,15 @@ const SuggestionScreen = () => {
 
     if (suggestionData == "empty") {
       Alert.alert("No suggestions found", "Try different filters");
+    }
+  };
+
+  const checksForAlreadyList = () => {
+    if (suggestionData[dataIndex]) {
+      setAlreadySearchedArray([
+        ...alreadySearchedArray,
+        suggestionData[dataIndex].id,
+      ]);
     }
   };
 
@@ -87,12 +91,7 @@ const SuggestionScreen = () => {
         <TouchableOpacity
           onPress={() => {
             setIsOverlayVisible(true);
-            if (suggestionData[dataIndex]) {
-              setAlreadySearchedArray([
-                ...alreadySearchedArray,
-                suggestionData[dataIndex].id,
-              ]);
-            }
+            checksForAlreadyList();
           }}>
           <Text style={{color: "red"}}>
             <Icon name="settings" size={10} color={"red"} /> filters
