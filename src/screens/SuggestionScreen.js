@@ -1,13 +1,17 @@
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import React, {useState} from "react";
 import {Button, Icon, Overlay} from "@rneui/themed";
 import LinearGradient from "react-native-linear-gradient";
 import {Spacer} from "../components/Spacer";
 import SliderComp from "../components/SliderComp";
 import {fetchSuggestions} from "../api/apiFunctions";
+import {isEmpty} from "lodash";
 
 const SuggestionScreen = () => {
-  const [suggestionData, setSuggestionData] = useState();
+  const [suggestionData, setSuggestionData] = useState("");
+  const [dataIndex, setDataIndex] = useState(0);
+  const [alreadySearchedArray, setAlreadySearchedArray] = useState([]);
+  const [page, setPage] = useState(2);
   const [watchType, setWatchType] = useState("movie");
   const [rating, setRating] = useState(1);
   const [year, setYear] = useState(1950);
@@ -15,20 +19,61 @@ const SuggestionScreen = () => {
   const [runtime, setRuntime] = useState(15);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
-  const suggestionsApiCall = () => {
-    fetchSuggestions(watchType, year, rating, runtime).then(res =>
-      setSuggestionData(res),
-    );
+  const suggestionAction = () => {
+    if (suggestionData[dataIndex]) {
+      setAlreadySearchedArray([
+        ...alreadySearchedArray,
+        suggestionData[dataIndex].id,
+      ]);
+    }
+    if (!suggestionData) {
+      fetchSuggestions(watchType, year, rating, runtime).then(res => {
+        const newArray = res?.filter(
+          item => !alreadySearchedArray.includes(item.id),
+        );
+
+        setSuggestionData(newArray);
+      });
+    } else {
+      setDataIndex(prev => prev + 1);
+    }
+    if (isEmpty(suggestionData[dataIndex + 1]) && !isEmpty(suggestionData)) {
+      fetchSuggestions(watchType, year, rating, runtime, page).then(res => {
+        if (!isEmpty(res)) {
+          const newArray = res?.filter(
+            item => !alreadySearchedArray.includes(item.id),
+          );
+          setSuggestionData(newArray);
+        } else {
+          setSuggestionData("empty");
+        }
+        setPage(prev => prev + 1);
+        setDataIndex(0);
+      });
+    }
+
+    if (suggestionData == "empty") {
+      Alert.alert("No suggestions found", "Try different filters");
+    }
   };
 
+  const onFilterConfirm = () => {
+    setIsOverlayVisible(false);
+    setDataIndex(0);
+    setSuggestionData("");
+    setPage(1);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.text}>Are you indecisive?</Text>
         <Text style={styles.text}>we got you with a button</Text>
+        <Text style={styles.text}>
+          {suggestionData[dataIndex]?.original_title}
+        </Text>
         <Spacer height={20} />
         <Button
-          onPress={() => suggestionsApiCall()}
+          onPress={() => suggestionAction()}
           size="lg"
           ViewComponent={LinearGradient}
           linearGradientProps={{
@@ -39,7 +84,16 @@ const SuggestionScreen = () => {
           Enlighten me
         </Button>
         <Spacer height={5} />
-        <TouchableOpacity onPress={() => setIsOverlayVisible(true)}>
+        <TouchableOpacity
+          onPress={() => {
+            setIsOverlayVisible(true);
+            if (suggestionData[dataIndex]) {
+              setAlreadySearchedArray([
+                ...alreadySearchedArray,
+                suggestionData[dataIndex].id,
+              ]);
+            }
+          }}>
           <Text style={{color: "red"}}>
             <Icon name="settings" size={10} color={"red"} /> filters
           </Text>
@@ -73,7 +127,7 @@ const SuggestionScreen = () => {
           setValue={setRuntime}
           label="Length (mins)"
         />
-        <Button title={"Set"} onPress={() => setIsOverlayVisible(false)} />
+        <Button title={"Set"} onPress={onFilterConfirm} />
       </Overlay>
     </View>
   );
