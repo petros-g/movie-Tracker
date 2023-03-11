@@ -3,8 +3,8 @@ import {Icon} from "@rneui/themed";
 import React from "react";
 import {StyleSheet} from "react-native";
 import MoviesScreen from "../screens/MovieScreen";
-import HomeScreen from "../screens/MovieScreen";
 import SeriesScreen from "../screens/SeriesScreen";
+import SuggestionScreen from "../screens/SuggestionScreen";
 import WatchlistScreen from "../screens/WatchlistScreen";
 
 const BottomBar = () => {
@@ -40,6 +40,16 @@ const BottomBar = () => {
         }}
         name="Series"
         component={SeriesScreen}
+      />
+      <Tab.Screen
+        options={{
+          tabBarIcon: () => {
+            return <Icon name="list" color={"white"} />;
+          },
+          tabBarActiveTintColor: "white",
+        }}
+        name="Suggestions"
+        component={SuggestionScreen}
       />
       <Tab.Screen
         options={{

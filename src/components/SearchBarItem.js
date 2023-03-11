@@ -87,6 +87,7 @@ const SearchBarItem = ({
         }
       />
       <Overlay
+        animationType="fade"
         isVisible={isOverlayVisible}
         onBackdropPress={() => setIsOverlayVisible(false)}>
         <View
