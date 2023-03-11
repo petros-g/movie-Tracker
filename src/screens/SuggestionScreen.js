@@ -11,7 +11,7 @@ const SuggestionScreen = () => {
   const [suggestionData, setSuggestionData] = useState("");
   const [dataIndex, setDataIndex] = useState(0);
   const [alreadySearchedArray, setAlreadySearchedArray] = useState([]);
-  const [page, setPage] = useState(2);
+  const [page, setPage] = useState(1);
   const [watchType, setWatchType] = useState("movie");
   const [rating, setRating] = useState(1);
   const [year, setYear] = useState(1950);
@@ -19,34 +19,32 @@ const SuggestionScreen = () => {
   const [runtime, setRuntime] = useState(15);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
-  const fetchingFromApi = pageVal => {
-    fetchSuggestions(watchType, year, rating, runtime, pageVal || page).then(
-      res => {
-        if (!isEmpty(res)) {
-          const newArray = res?.filter(
-            item => !alreadySearchedArray.includes(item.id),
-          );
-          if (isEmpty(newArray)) {
-            setPage(prev => prev + 1);
-            Alert.alert("No suggestions found", "Try different filters");
-          }
-          setSuggestionData(newArray);
-        } else {
-        }
-        if (!pageVal) {
+  const fetchingFromApi = () => {
+    fetchSuggestions(watchType, year, rating, runtime, page).then(res => {
+      if (!isEmpty(res)) {
+        const newArray = res?.filter(
+          item => !alreadySearchedArray.includes(item.id),
+        );
+        console.log(res);
+        setSuggestionData(newArray);
+        if (isEmpty(newArray)) {
           setPage(prev => prev + 1);
-          setDataIndex(0);
+          fetchingFromApi();
         }
-      },
-    );
+
+        setDataIndex(0);
+      }
+    });
   };
+
   const suggestionAction = () => {
     checksForAlreadyList();
     if (isEmpty(suggestionData)) {
-      fetchingFromApi(1);
+      fetchingFromApi();
     } else {
       setDataIndex(prev => prev + 1);
     }
+
     if (isEmpty(suggestionData[dataIndex + 1]) && !isEmpty(suggestionData)) {
       fetchingFromApi();
     }

@@ -151,6 +151,7 @@ export const fetchSuggestions = async (
   const suggestionLink = `https://api.themoviedb.org/3/discover/${type}?api_key=${API_KEY}&language=en-US&page=${page}&release_date.lte=${year}&vote_average.gte=${rating}&with_original_language=en&n&with_runtime.gte=${runtime}`;
   try {
     const {data} = await axios.get(suggestionLink);
+
     return data.results;
   } catch {}
 };
