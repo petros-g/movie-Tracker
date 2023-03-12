@@ -7,8 +7,14 @@ import SliderComp from "../components/SliderComp";
 import {fetchSuggestions} from "../api/apiFunctions";
 import {isEmpty} from "lodash";
 import FastImage from "react-native-fast-image";
+import {useDispatch} from "react-redux";
+import {
+  getDetailsData,
+  setDetailModalVisible,
+} from "../redux/slices/detailsSlice";
 
 const SuggestionScreen = () => {
+  const dispatch = useDispatch();
   const [suggestionData, setSuggestionData] = useState("");
   const [dataIndex, setDataIndex] = useState(0);
   const [alreadySearchedArray, setAlreadySearchedArray] = useState([]);
@@ -79,6 +85,11 @@ const SuggestionScreen = () => {
     setSuggestionData("");
     setPage(1);
   };
+
+  const openModal = (id, type) => {
+    dispatch(setDetailModalVisible(true));
+    dispatch(getDetailsData({id: id, type}));
+  };
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -108,6 +119,7 @@ const SuggestionScreen = () => {
         </TouchableOpacity>
         {suggestionData[dataIndex] && (
           <TouchableOpacity
+            onPress={() => openModal(suggestionData[dataIndex]?.id, "movie")} //attention
             key={suggestionData[dataIndex]?.id}
             style={styles.touchableOpacity}>
             <FastImage
