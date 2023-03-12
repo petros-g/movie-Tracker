@@ -1,5 +1,5 @@
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Icon, Overlay} from "@rneui/themed";
 import LinearGradient from "react-native-linear-gradient";
 import {Spacer} from "../components/Spacer";
@@ -18,35 +18,40 @@ const SuggestionScreen = () => {
   const [genres, setGenres] = useState();
   const [runtime, setRuntime] = useState(15);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
-  const fetchingFromApi = () => {
+  const fetchingFromApi = page => {
     fetchSuggestions(watchType, year, rating, runtime, page).then(res => {
       if (!isEmpty(res)) {
         const newArray = res?.filter(
           item => !alreadySearchedArray.includes(item.id),
         );
-        console.log(res);
-        setSuggestionData(newArray);
-        if (isEmpty(newArray)) {
-          setPage(prev => prev + 1);
-          fetchingFromApi();
-        }
 
+        setSuggestionData(newArray);
         setDataIndex(0);
+        if (isEmpty(newArray)) {
+          fetchingFromApi(page + 1);
+        }
+      } else {
+        Alert.alert("Error");
       }
     });
   };
 
   const suggestionAction = () => {
-    checksForAlreadyList();
     if (isEmpty(suggestionData)) {
-      fetchingFromApi();
+      fetchingFromApi(page);
     } else {
+      checksForAlreadyList();
       setDataIndex(prev => prev + 1);
     }
 
     if (isEmpty(suggestionData[dataIndex + 1]) && !isEmpty(suggestionData)) {
-      fetchingFromApi();
+      setPage(page + 1);
+      fetchingFromApi(page + 1);
+      if (isEmpty(suggestionData) && !isEmpty(alreadySearchedArray)) {
+        Alert.alert("Error");
+      }
     }
   };
 
@@ -58,6 +63,10 @@ const SuggestionScreen = () => {
       ]);
     }
   };
+
+  useEffect(() => {
+    setIsButtonDisabled(false);
+  }, [rating, year, runtime]);
 
   const onFilterConfirm = () => {
     setIsOverlayVisible(false);
@@ -89,7 +98,6 @@ const SuggestionScreen = () => {
         <TouchableOpacity
           onPress={() => {
             setIsOverlayVisible(true);
-            checksForAlreadyList();
           }}>
           <Text style={{color: "red"}}>
             <Icon name="settings" size={10} color={"red"} /> filters
@@ -97,6 +105,7 @@ const SuggestionScreen = () => {
         </TouchableOpacity>
       </View>
       <Overlay
+        onShow={() => setIsButtonDisabled(true)}
         overlayStyle={{width: "60%", padding: 30}}
         animationType="fade"
         isVisible={isOverlayVisible}
@@ -124,7 +133,11 @@ const SuggestionScreen = () => {
           setValue={setRuntime}
           label="Length (mins)"
         />
-        <Button title={"Set"} onPress={onFilterConfirm} />
+        <Button
+          disabled={isButtonDisabled}
+          title={"Set"}
+          onPress={onFilterConfirm}
+        />
       </Overlay>
     </View>
   );
