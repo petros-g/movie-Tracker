@@ -1,11 +1,12 @@
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import React, {useEffect, useState} from "react";
-import {Button, Icon, Overlay} from "@rneui/themed";
+import {Button, CheckBox, Chip, Icon, Overlay} from "@rneui/themed";
 import LinearGradient from "react-native-linear-gradient";
 import {Spacer} from "../components/Spacer";
 import SliderComp from "../components/SliderComp";
 import {fetchSuggestions} from "../api/apiFunctions";
 import {isEmpty} from "lodash";
+import FastImage from "react-native-fast-image";
 
 const SuggestionScreen = () => {
   const [suggestionData, setSuggestionData] = useState("");
@@ -19,6 +20,7 @@ const SuggestionScreen = () => {
   const [runtime, setRuntime] = useState(15);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [checkbox, setCheckBox] = useState(false);
 
   const fetchingFromApi = page => {
     fetchSuggestions(watchType, year, rating, runtime, page).then(res => {
@@ -27,9 +29,9 @@ const SuggestionScreen = () => {
           item => !alreadySearchedArray.includes(item.id),
         );
 
-        setSuggestionData(newArray);
+        setSuggestionData(checkbox ? newArray : res);
         setDataIndex(0);
-        if (isEmpty(newArray)) {
+        if (isEmpty(newArray) && checkbox) {
           fetchingFromApi(page + 1);
         }
       } else {
@@ -56,7 +58,10 @@ const SuggestionScreen = () => {
   };
 
   const checksForAlreadyList = () => {
-    if (suggestionData[dataIndex]) {
+    if (
+      suggestionData[dataIndex] &&
+      !alreadySearchedArray?.includes(suggestionData[dataIndex].id)
+    ) {
       setAlreadySearchedArray([
         ...alreadySearchedArray,
         suggestionData[dataIndex].id,
@@ -66,7 +71,7 @@ const SuggestionScreen = () => {
 
   useEffect(() => {
     setIsButtonDisabled(false);
-  }, [rating, year, runtime]);
+  }, [rating, year, runtime, checkbox]);
 
   const onFilterConfirm = () => {
     setIsOverlayVisible(false);
@@ -79,9 +84,7 @@ const SuggestionScreen = () => {
       <View style={styles.content}>
         <Text style={styles.text}>Are you indecisive?</Text>
         <Text style={styles.text}>we got you with a button</Text>
-        <Text style={styles.text}>
-          {suggestionData[dataIndex]?.original_title}
-        </Text>
+
         <Spacer height={20} />
         <Button
           onPress={() => suggestionAction()}
@@ -103,10 +106,62 @@ const SuggestionScreen = () => {
             <Icon name="settings" size={10} color={"red"} /> filters
           </Text>
         </TouchableOpacity>
+        {suggestionData[dataIndex] && (
+          <TouchableOpacity
+            key={suggestionData[dataIndex]?.id}
+            style={styles.touchableOpacity}>
+            <FastImage
+              style={{height: 180, width: 120}}
+              resizeMode={FastImage.resizeMode.contain}
+              source={{
+                uri: `https://image.tmdb.org/t/p/w200${
+                  suggestionData[dataIndex]?.poster ||
+                  suggestionData[dataIndex]?.poster_path
+                }`,
+              }}
+            />
+            <View style={styles.descrView}>
+              <Text style={styles.title}>
+                {suggestionData[dataIndex].title}{" "}
+                <Text style={{color: "gray", fontSize: 15}}>
+                  ({suggestionData[dataIndex].type || "movie"})
+                </Text>
+              </Text>
+              <Text
+                style={{
+                  fontSize: 20,
+                  color: "white",
+                }}>
+                {suggestionData[dataIndex]?.rating?.toFixed(1) ||
+                  suggestionData[dataIndex]?.vote_average?.toFixed(1)}
+                ⭐
+              </Text>
+              <Chip
+                title={
+                  suggestionData[dataIndex]?.release?.slice(0, 4) ||
+                  suggestionData[dataIndex]?.release_date?.slice(0, 4)
+                }
+                size="sm"
+                icon={{
+                  name: "calendar",
+                  type: "font-awesome",
+                  size: 15,
+                  color: "white",
+                }}
+                raised
+                color={"#292b30"}
+                buttonStyle={{elevation: 8}}
+                containerStyle={{
+                  alignSelf: "flex-start",
+                }}
+              />
+            </View>
+          </TouchableOpacity>
+        )}
       </View>
       <Overlay
         onShow={() => setIsButtonDisabled(true)}
-        overlayStyle={{width: "60%", padding: 30}}
+        overlayStyle={{width: "80%", padding: 15}}
         animationType="fade"
         isVisible={isOverlayVisible}
         onBackdropPress={() => setIsOverlayVisible(false)}>
@@ -133,6 +188,12 @@ const SuggestionScreen = () => {
           setValue={setRuntime}
           label="Length (mins)"
         />
+        <CheckBox
+          textStyle={{flex: 0}}
+          title="Skip already suggested matches"
+          checked={checkbox}
+          onPress={() => setCheckBox(!checkbox)}
+        />
         <Button
           disabled={isButtonDisabled}
           title={"Set"}
@@ -152,10 +213,26 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: "center",
+    marginTop: 100,
     alignItems: "center",
   },
   text: {
     color: "white",
+  },
+  touchableOpacity: {
+    padding: 10,
+    flexDirection: "row",
+    margin: 0,
+  },
+  descrView: {
+    flex: 1,
+    marginLeft: 10,
+    justifyContent: "space-evenly",
+  },
+  title: {
+    color: "white",
+
+    fontWeight: "bold",
+    fontSize: 20,
   },
 });
