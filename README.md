@@ -26,5 +26,7 @@ Welcome to Movie App, a React Native application designed to bring the world of 
 
 - 🎮 **Interactive Quizzes:** Integrate quizzes or trivia games related to movies and series to engage users and test their knowledge.
 
+[Preview](https://github.com/petros-g/movieTr/assets/96618818/6d3987cb-24a9-49ec-972a-283a290d6754)
+
 
 
