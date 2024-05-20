@@ -1,5 +1,9 @@
 # Movie App 🎬
 
+![image](https://github.com/petros-g/movie-Tracker/assets/96618818/676b9563-ba30-4032-9d94-d8b401ef66dd)
+
+
+## Overview
 Welcome to Movie App, a React Native application designed to bring the world of movies and TV series right to your fingertips. With this app, you can explore a vast library of movies and series, manage your favorites, search for specific titles, and receive personalized recommendations based on your preferences.
 
 ## Features & Technologies 🚀
